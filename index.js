@@ -18,8 +18,8 @@ app.use(bodyParser.json());
 app.get("/", (req, res) => {});
  
 app.post("/authlogin", (req, res) => {
-  var email = req.body.email;
-  var password = req.body.password;
+  let email = req.body.email;
+  let password = req.body.password;
   const sql = "SELECT * FROM akun WHERE email = ? AND password = ?";
   if (email && password) {
     db.query(sql, [email, password], (err, rows) => {
@@ -34,7 +34,30 @@ app.post("/authlogin", (req, res) => {
     });
   }
 });
- 
+
+app.post('/auth_register', (req, res) => {
+  var register_data = {
+      nama: req.body.nama,
+      email: req.body.email,
+      password: req.body.password
+  }
+  db.query('INSERT INTO akun SET ?', register_data, (err, results)=>{
+      if(err) throw err
+      else{
+          res.send("selamat berhasil register dengan email "+register_data.email)    
+          console.log("Berhasil register", results)
+      }
+  })
+});
+
+app.get('/logout', (req, res)=>{
+  if(req.session.loggedin === true){
+      req.session.loggedin = false
+  }
+  res.end("Berhasil logout")
+})
+
+
 app.listen(port, () => {
   console.log(`Server di ${port}`);
 });
